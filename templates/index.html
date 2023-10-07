@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Summary and Sentiment Analysis</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+        }
+
+        body {
+            background-image: url('static/img/cool-background.jpg');
+            background-repeat: repeat;
+            font-family: Arial, sans-serif;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1b1c5e;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .header-container {
+            background: linear-gradient(90deg, #5D54A4, #7C78B8);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header-container h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header-container h2 {
+            color: #fffab9;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .article-list {
+            margin-top: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .article-list-item {
+            background: linear-gradient(90deg, #5D54A4, #7C78B8);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-list-item h3 {
+            color: #ffffff;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .article-list-item p {
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button-container .view-button {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .button-container .delete-button {
+            background-color: #F44336;
+            color: white;
+            margin-left: auto;
+        }
+
+        .button-container button:hover {
+            opacity: 0.8;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .back-button a {
+            display: inline-block;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #526de4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-button a:hover {
+            background-color: #11551644;
+        }
+
+        .top-right {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+        }
+
+        .logout-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #72039e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .logout-button:hover {
+            background-color: #e53935;
+        }
+        .logout-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logout-container form {
+            display: inline-block;
+        }
+
+        .logout-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .logout-container button:hover {
+            background-color: #37006b;
+        }
+
+        @media only screen and (max-width: 480px) {
+            body {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            .header-container {
+                padding: 10px;
+            }
+
+            .article-list {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>     
+    <div class="header-container">
+        <div><img src="static/img/login.png" alt="Logo" width="200" height="100"></div>
+        <h1>Article Summary using Machine Learning with Sentiment Analysis</h1>
+        <h2>BSCS-SD3B</h2>
+        <form action="/article" method="post">
+            <input type="text" name="url" placeholder="Enter article URL" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    <div class="view-button-container">
+        {% if summarized_articles %}
+        <form action="/view" method="POST">
+            <input type="hidden" name="article_id" value="{{ summarized_articles[0].article_id }}">
+            <button type="submit" class="view-button">View all summarized articles in detailed form</button>
+        </form>
+        {% endif %}
+    </div>    
+    {% if summarized_articles %}
+    <div class="article-list">
+        {% for article in summarized_articles %}
+        <div class="article-list-item">
+            <h3>{{ article.title }}</h3>
+            <p>{{ article.summary }}</p>
+            <div class="button-container">
+                <form action="/delete" method="POST">
+                    <input type="hidden" name="article_id" value="{{ article.article_id }}">
+                    <button type="submit" class="delete-button">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="logout-container">
+        <form action="/logout" method="POST">
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+</body>
+</html>
